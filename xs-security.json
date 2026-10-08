@@ -1,0 +1,66 @@
+{
+"xsappname": "sales-order",
+"tenant-mode": "dedicated",
+"description": "Security configuration for Sales Order Management",
+"scopes": [
+{
+"name": "$XSAPPNAME.SalesRep",
+"description": "Create and maintain Open sales orders"
+},
+{
+"name": "$XSAPPNAME.SalesManager",
+"description": "Manage, ship, and cancel sales orders"
+},
+{
+"name": "$XSAPPNAME.Leadership",
+"description": "Read sales orders and management analytics"
+}
+],
+"role-templates": [
+{
+"name": "SalesRep",
+"description": "Sales Representative",
+"scope-references": [
+"$XSAPPNAME.SalesRep"
+]
+},
+{
+"name": "SalesManager",
+"description": "Sales Manager",
+"scope-references": [
+"$XSAPPNAME.SalesManager",
+"$XSAPPNAME.SalesRep"
+]
+},
+{
+"name": "Leadership",
+"description": "Leadership User",
+"scope-references": [
+"$XSAPPNAME.Leadership"
+]
+}
+],
+"role-collections": [
+{
+"name": "SalesOrder-SalesRep",
+"description": "Sales Order Sales Representative",
+"role-template-references": [
+"$XSAPPNAME.SalesRep"
+]
+},
+{
+"name": "SalesOrder-SalesManager",
+"description": "Sales Order Sales Manager",
+"role-template-references": [
+"$XSAPPNAME.SalesManager"
+]
+},
+{
+"name": "SalesOrder-Leadership",
+"description": "Sales Order Leadership",
+"role-template-references": [
+"$XSAPPNAME.Leadership"
+]
+}
+]
+}

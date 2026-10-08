@@ -1,0 +1,16 @@
+ID,customerCode,name,segment,region,email
+11111111-1111-1111-1111-111111111111,CUST001,Sharma Retail Pvt Ltd,Retail,North,contact@sharmaretail.in
+22222222-2222-2222-2222-222222222222,CUST002,Delhi Electronics Hub,Retail,North,sales@delhielectronics.in
+33333333-3333-3333-3333-333333333333,CUST003,Punjab Office Solutions,Corporate,North,orders@punjaboffice.in
+44444444-4444-4444-4444-444444444444,CUST004,Chennai Tech World,Retail,South,contact@chennaitech.in
+55555555-5555-5555-5555-555555555555,CUST005,Bangalore Business Systems,Corporate,South,purchase@bbsystems.in
+66666666-6666-6666-6666-666666666666,CUST006,Hyderabad Digital Store,Retail,South,orders@hydigital.in
+77777777-7777-7777-7777-777777777777,CUST007,Kochi Smart Solutions,Corporate,South,info@kochismart.in
+88888888-8888-8888-8888-888888888888,MUM001,Mumbai Office Mart,Retail,West,sales@mumbaiofficemart.in
+99999999-9999-9999-9999-999999999999,CUST009,Pune Industrial Supplies,Corporate,West,orders@puneindustrial.in
+aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa,CUST010,Ahmedabad Business House,Corporate,West,contact@abh.in
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb,CUST011,Jaipur Home Electronics,Retail,North,orders@jaipurhome.in
+cccccccc-cccc-cccc-cccc-cccccccccccc,CUST012,Kolkata Enterprise Store,Corporate,East,sales@kolkataenterprise.in
+dddddddd-dddd-dddd-dddd-dddddddddddd,CUST013,Bhubaneswar Tech Services,Corporate,East,info@bbs-tech.in
+eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee,CUST014,Guwahati Retail Center,Retail,East,contact@guwahatiretail.in
+ffffffff-ffff-ffff-ffff-ffffffffffff,CUST015,Patna Business Mart,Retail,East,orders@patnabusiness.in

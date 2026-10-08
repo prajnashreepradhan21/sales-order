@@ -1,0 +1,66 @@
+{
+  "name": "sales-order",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@cap-js/hana": "^3",
+    "@sap/cds": "^10",
+    "@sap/xssec": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^3",
+    "@sap/cds-dk": "^10",
+    "cds-plugin-ui5": "^0.17.0"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-salesorders": "cds watch --open com.sales.orders.salesorders/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "private": true,
+  "cds": {
+    "requires": {
+      "auth": {
+        "kind": "mocked",
+        "users": {
+          "salesrep": {
+            "password": "salesrep",
+            "roles": [
+              "SalesRep"
+            ]
+          },
+          "manager": {
+            "password": "manager",
+            "roles": [
+              "SalesManager"
+            ]
+          },
+          "leader": {
+            "password": "leader",
+            "roles": [
+              "Leadership"
+            ]
+          },
+          "admin": {
+            "password": "admin",
+            "roles": [
+              "SalesRep",
+              "SalesManager",
+              "Leadership"
+            ]
+          }
+        }
+      },
+      "[production]": {
+        "auth": {
+          "kind": "xsuaa"
+        }
+      }
+    }
+  },
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/salesorders"
+  ]
+}
