@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_REVENUE_BY_REGION" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="true" application="BAS">
+<descriptions defaultDescription="CV_REVENUE_BY_REGION"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="SALES_SALESORDERS">
+    <resourceUri>SALES_SALESORDERS</resourceUri>
+  </DataSource>
+  <DataSource id="SALES_SALESORDERITEMS">
+    <resourceUri>SALES_SALESORDERITEMS</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="C1_N" joinType="inner" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="REGION"/>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="CURRENCY"/>
+      <viewAttribute id="QUANTITY" aggregationType="sum"/>
+      <viewAttribute id="LINEAMOUNT" aggregationType="sum"/>
+      <viewAttribute hidden="true" id="JOIN$ID$ORDER_ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="SALES_SALESORDERS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="REGION" source="REGION"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ID$ORDER_ID" source="ID"/>
+    </input>
+    <input node="SALES_SALESORDERITEMS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="QUANTITY" source="QUANTITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LINEAMOUNT" source="LINEAMOUNT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ID$ORDER_ID" source="ORDER_ID"/>
+    </input>
+    <filter>&quot;STATUS&quot; &lt;&gt; 'Cancelled'</filter>
+    <joinAttribute name="JOIN$ID$ORDER_ID"/>
+  </calculationView>
+</calculationViews>
+
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="REGION" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Region"/>
+      <keyMapping columnObjectName="Join_1" columnName="REGION"/>
+    </attribute>
+    <attribute id="CURRENCY" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="Currency"/>
+      <keyMapping columnObjectName="Join_1" columnName="CURRENCY"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="QUANTITY_SOLD" order="3" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="Quantity"/>
+      <measureMapping columnObjectName="Join_1" columnName="QUANTITY"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="REVENUE" order="4" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="Revenue"/>
+      <measureMapping columnObjectName="Join_1" columnName="LINEAMOUNT"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+    
+  
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="216"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="SALES_SALESORDERS" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="-14" y="16"/>
+      <rectangleSize width="202"/>
+    </shape>
+    <shape modelObjectName="SALES_SALESORDERITEMS" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="230"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

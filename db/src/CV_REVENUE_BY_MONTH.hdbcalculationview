@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_REVENUE_BY_MONTH" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="true" application="BAS">
+<descriptions defaultDescription="CV_REVENUE_BY_MONTH"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="SALES_SALESORDERS">
+    <resourceUri>SALES_SALESORDERS</resourceUri>
+  </DataSource>
+  <DataSource id="SALES_SALESORDERITEMS">
+    <resourceUri>SALES_SALESORDERITEMS</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_Orders_Items" cardinality="C1_N" joinType="inner" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="ORDERDATE"/>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="CURRENCY"/>
+      <viewAttribute id="QUANTITY" aggregationType="sum"/>
+      <viewAttribute id="LINEAMOUNT" aggregationType="sum"/>
+      <viewAttribute hidden="true" id="JOIN$ID$ORDER_ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="ORDER_YEAR" datatype="INTEGER" expressionLanguage="SQL">
+        <formula>YEAR(&quot;ORDERDATE&quot;)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="ORDER_MONTH" datatype="INTEGER" expressionLanguage="SQL">
+        <formula>MONTH(&quot;ORDERDATE&quot;)</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="SALES_SALESORDERS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ORDERDATE" source="ORDERDATE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ID$ORDER_ID" source="ID"/>
+    </input>
+    <input node="SALES_SALESORDERITEMS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="QUANTITY" source="QUANTITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LINEAMOUNT" source="LINEAMOUNT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ID$ORDER_ID" source="ORDER_ID"/>
+    </input>
+    <filter>&quot;STATUS&quot; &lt;&gt; 'Cancelled'</filter>
+    <joinAttribute name="JOIN$ID$ORDER_ID"/>
+  </calculationView>
+</calculationViews>
+
+<logicalModel id="Join_Orders_Items">
+  <attributes>
+    <attribute id="ORDER_YEAR" order="1">
+      <descriptions defaultDescription="ORDER_YEAR"/>
+      <keyMapping columnObjectName="Join_Orders_Items" columnName="ORDER_YEAR"/>
+    </attribute>
+    <attribute id="ORDER_MONTH" order="2">
+      <descriptions defaultDescription="ORDER_MONTH"/>
+      <keyMapping columnObjectName="Join_Orders_Items" columnName="ORDER_MONTH"/>
+    </attribute>
+    <attribute id="CURRENCY" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CURRENCY"/>
+      <keyMapping columnObjectName="Join_Orders_Items" columnName="CURRENCY"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="QUANTITY" order="4" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="QUANTITY"/>
+      <measureMapping columnObjectName="Join_Orders_Items" columnName="QUANTITY"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="LINEAMOUNT" order="5" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="LINEAMOUNT"/>
+      <measureMapping columnObjectName="Join_Orders_Items" columnName="LINEAMOUNT"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+    
+  
+    <shape expanded="true" modelObjectName="Join_Orders_Items" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="191"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="SALES_SALESORDERS" modelObjectNameSpace="Join_Orders_Items" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="202.029296875"/>
+    </shape>
+    <shape modelObjectName="SALES_SALESORDERITEMS" modelObjectNameSpace="Join_Orders_Items" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="230.693359375"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

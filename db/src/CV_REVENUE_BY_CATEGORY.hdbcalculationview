@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_REVENUE_BY_CATEGORY" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="true" application="BAS">
+<descriptions defaultDescription="CV_REVENUE_BY_CATEGORY"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="SALES_SALESORDERS">
+    <resourceUri>SALES_SALESORDERS</resourceUri>
+  </DataSource>
+  <DataSource id="SALES_SALESORDERITEMS">
+    <resourceUri>SALES_SALESORDERITEMS</resourceUri>
+  </DataSource>
+  <DataSource id="SALES_PRODUCTS">
+    <resourceUri>SALES_PRODUCTS</resourceUri>
+  </DataSource>
+  <DataSource id="SALES_PRODUCTCATEGORIES">
+    <resourceUri>SALES_PRODUCTCATEGORIES</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_Orders_Items" cardinality="C1_N" joinType="inner" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="CURRENCY"/>
+      <viewAttribute id="PRODUCT_ID"/>
+      <viewAttribute id="QUANTITY" aggregationType="sum"/>
+      <viewAttribute id="LINEAMOUNT" aggregationType="sum"/>
+      <viewAttribute hidden="true" id="JOIN$ID$ORDER_ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="SALES_SALESORDERS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ID$ORDER_ID" source="ID"/>
+    </input>
+    <input node="SALES_SALESORDERITEMS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PRODUCT_ID" source="PRODUCT_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="QUANTITY" source="QUANTITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LINEAMOUNT" source="LINEAMOUNT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$ID$ORDER_ID" source="ORDER_ID"/>
+    </input>
+    <filter>&quot;STATUS&quot; &lt;&gt; 'Cancelled'</filter>
+    <joinAttribute name="JOIN$ID$ORDER_ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_Products" cardinality="CN_1" joinType="inner" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="CURRENCY"/>
+      <viewAttribute id="QUANTITY" aggregationType="sum"/>
+      <viewAttribute id="LINEAMOUNT" aggregationType="sum"/>
+      <viewAttribute id="CATEGORY_ID"/>
+      <viewAttribute hidden="true" id="JOIN$PRODUCT_ID$ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Join_Orders_Items">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="QUANTITY" source="QUANTITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LINEAMOUNT" source="LINEAMOUNT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$PRODUCT_ID$ID" source="PRODUCT_ID"/>
+    </input>
+    <input node="SALES_PRODUCTS">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_ID" source="CATEGORY_ID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$PRODUCT_ID$ID" source="ID"/>
+    </input>
+    <joinAttribute name="JOIN$PRODUCT_ID$ID"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_Categories" cardinality="CN_1" joinType="inner" filterExpressionLanguage="SQL">
+    <viewAttributes>
+      <viewAttribute id="CATEGORY_CODE"/>
+      <viewAttribute id="CATEGORY_NAME"/>
+      <viewAttribute id="CURRENCY"/>
+      <viewAttribute id="QUANTITY" aggregationType="sum"/>
+      <viewAttribute id="LINEAMOUNT" aggregationType="sum"/>
+      <viewAttribute hidden="true" id="JOIN$CATEGORY_ID$ID"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Join_Products">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="QUANTITY" source="QUANTITY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="LINEAMOUNT" source="LINEAMOUNT"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CATEGORY_ID$ID" source="CATEGORY_ID"/>
+    </input>
+    <input node="SALES_PRODUCTCATEGORIES">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_CODE" source="CODE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CATEGORY_NAME" source="NAME"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CATEGORY_ID$ID" source="ID"/>
+    </input>
+    <joinAttribute name="JOIN$CATEGORY_ID$ID"/>
+  </calculationView>
+</calculationViews>
+
+<logicalModel id="Join_Categories">
+  <attributes>
+    <attribute id="CATEGORY_CODE" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CODE"/>
+      <keyMapping columnObjectName="Join_Categories" columnName="CATEGORY_CODE"/>
+    </attribute>
+    <attribute id="CATEGORY_NAME" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping columnObjectName="Join_Categories" columnName="CATEGORY_NAME"/>
+    </attribute>
+    <attribute id="CURRENCY" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CURRENCY"/>
+      <keyMapping columnObjectName="Join_Categories" columnName="CURRENCY"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="QUANTITY_SOLD" order="4" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="QUANTITY"/>
+      <measureMapping columnObjectName="Join_Categories" columnName="QUANTITY"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="REVENUE" order="5" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="LINEAMOUNT"/>
+      <measureMapping columnObjectName="Join_Categories" columnName="LINEAMOUNT"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="92.00000000000004" y="112"/>
+    
+      <rectangleSize width="182.99999999999997"/>
+    </shape>
+    
+  
+    <shape expanded="true" modelObjectName="Join_Orders_Items" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="106.21204661176174" y="481.9999988079071"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="SALES_SALESORDERS" modelObjectNameSpace="Join_Orders_Items" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="-6" y="14"/>
+      <rectangleSize width="202.029296875"/>
+    </shape>
+    <shape modelObjectName="SALES_SALESORDERITEMS" modelObjectNameSpace="Join_Orders_Items" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="230.693359375"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_Products" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="106.21204661176175" y="341.9999988079071"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="Join_Orders_Items" modelObjectNameSpace="Join_Products" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="SALES_PRODUCTS" modelObjectNameSpace="Join_Products" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_Categories" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="103.5" y="217"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="Join_Products" modelObjectNameSpace="Join_Categories" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+    <shape modelObjectName="SALES_PRODUCTCATEGORIES" modelObjectNameSpace="Join_Categories" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="250"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>

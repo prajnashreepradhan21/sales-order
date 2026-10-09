@@ -1,0 +1,4 @@
+.env
+default-env.json
+*.servicekey
+*.service-key*json

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="CV_YEAR_OVER_YEAR_REVENUE" applyPrivilegeType="NONE" dataCategory="CUBE" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Aggregation" cacheInvalidationPeriod="NONE" enforceSqlExecution="true" application="BAS">
+<descriptions defaultDescription="CV_YEAR_OVER_YEAR_REVENUE"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="CV_SALES_REVENUE_ANALYTICS">
+    <resourceUri>CV_SALES_REVENUE_ANALYTICS</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_Yearly_Revenue">
+    <viewAttributes>
+      <viewAttribute id="ORDER_YEAR"/>
+      <viewAttribute id="CURRENCY"/>
+      <viewAttribute id="REVENUE" aggregationType="sum"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="CV_SALES_REVENUE_ANALYTICS"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_Current_Year">
+    <viewAttributes>
+      <viewAttribute id="CURRENT_YEAR"/>
+      <viewAttribute id="CURRENT_CURRENCY"/>
+      <viewAttribute id="CURRENT_YEAR_REVENUE"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Aggregation_Yearly_Revenue">
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENT_YEAR" source="ORDER_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENT_CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENT_YEAR_REVENUE" source="REVENUE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_Previous_Year">
+    <viewAttributes>
+      <viewAttribute id="PREVIOUS_YEAR"/>
+      <viewAttribute id="PREVIOUS_CURRENCY"/>
+      <viewAttribute id="PREVIOUS_YEAR_REVENUE"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="MATCH_YEAR" datatype="INTEGER" expressionLanguage="SQL">
+        <formula>&quot;PREVIOUS_YEAR&quot; + 1</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="Aggregation_Yearly_Revenue">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREVIOUS_YEAR" source="ORDER_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREVIOUS_CURRENCY" source="CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREVIOUS_YEAR_REVENUE" source="REVENUE"/>
+    </input>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_Current_Previous" cardinality="C1_1" joinType="leftOuter">
+    <viewAttributes>
+      <viewAttribute id="ORDER_YEAR" aggregationType="sum"/>
+      <viewAttribute id="PREVIOUS_YEAR" aggregationType="sum"/>
+      <viewAttribute id="CURRENCY"/>
+      <viewAttribute id="CURRENT_YEAR_REVENUE" aggregationType="sum"/>
+      <viewAttribute id="PREVIOUS_YEAR_REVENUE" aggregationType="sum"/>
+      <viewAttribute hidden="true" id="JOIN$MATCH_YEAR$CURRENT_YEAR"/>
+      <viewAttribute hidden="true" id="JOIN$PREVIOUS_CURRENCY$CURRENT_CURRENCY"/>
+    </viewAttributes>
+    <calculatedViewAttributes>
+      <calculatedViewAttribute id="REVENUE_CHANGE" datatype="DECIMAL" length="18" scale="2" expressionLanguage="SQL">
+        <formula>&quot;CURRENT_YEAR_REVENUE&quot; - IFNULL(&quot;PREVIOUS_YEAR_REVENUE&quot;, 0)</formula>
+      </calculatedViewAttribute>
+      <calculatedViewAttribute id="GROWTH_PERCENTAGE" datatype="DECIMAL" length="18" scale="2" expressionLanguage="SQL">
+        <formula>CASE
+    WHEN &quot;PREVIOUS_YEAR_REVENUE&quot; IS NULL
+         OR &quot;PREVIOUS_YEAR_REVENUE&quot; = 0
+    THEN 0
+    ELSE
+        (
+            (
+                &quot;CURRENT_YEAR_REVENUE&quot;
+                - &quot;PREVIOUS_YEAR_REVENUE&quot;
+            )
+            / &quot;PREVIOUS_YEAR_REVENUE&quot;
+        ) * 100
+END</formula>
+      </calculatedViewAttribute>
+    </calculatedViewAttributes>
+    <input node="Projection_Previous_Year">
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREVIOUS_YEAR" source="PREVIOUS_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="PREVIOUS_YEAR_REVENUE" source="PREVIOUS_YEAR_REVENUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$MATCH_YEAR$CURRENT_YEAR" source="MATCH_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$PREVIOUS_CURRENCY$CURRENT_CURRENCY" source="PREVIOUS_CURRENCY"/>
+    </input>
+    <input node="Projection_Current_Year">
+      <mapping xsi:type="Calculation:AttributeMapping" target="ORDER_YEAR" source="CURRENT_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENCY" source="CURRENT_CURRENCY"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="CURRENT_YEAR_REVENUE" source="CURRENT_YEAR_REVENUE"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$MATCH_YEAR$CURRENT_YEAR" source="CURRENT_YEAR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$PREVIOUS_CURRENCY$CURRENT_CURRENCY" source="CURRENT_CURRENCY"/>
+    </input>
+    <joinAttribute name="JOIN$MATCH_YEAR$CURRENT_YEAR"/>
+    <joinAttribute name="JOIN$PREVIOUS_CURRENCY$CURRENT_CURRENCY"/>
+  </calculationView>
+</calculationViews>
+
+<logicalModel id="Join_Current_Previous">
+  <attributes>
+    <attribute id="ORDER_YEAR" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ORDER_YEAR"/>
+      <keyMapping columnObjectName="Join_Current_Previous" columnName="ORDER_YEAR"/>
+    </attribute>
+    <attribute id="PREVIOUS_YEAR" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="ORDER_YEAR"/>
+      <keyMapping columnObjectName="Join_Current_Previous" columnName="PREVIOUS_YEAR"/>
+    </attribute>
+    <attribute id="CURRENCY" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="CURRENCY"/>
+      <keyMapping columnObjectName="Join_Current_Previous" columnName="CURRENCY"/>
+    </attribute>
+    <attribute id="GROWTH_PERCENTAGE" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="GROWTH_PERCENTAGE"/>
+      <keyMapping columnObjectName="Join_Current_Previous" columnName="GROWTH_PERCENTAGE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures>
+    <measure id="CURRENT_YEAR_REVENUE" order="4" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="LINEAMOUNT"/>
+      <measureMapping columnObjectName="Join_Current_Previous" columnName="CURRENT_YEAR_REVENUE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="PREVIOUS_YEAR_REVENUE" order="5" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="LINEAMOUNT"/>
+      <measureMapping columnObjectName="Join_Current_Previous" columnName="PREVIOUS_YEAR_REVENUE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+    <measure id="REVENUE_CHANGE" order="6" aggregationType="sum" measureType="simple">
+      <descriptions defaultDescription="REVENUE_CHANGE"/>
+      <measureMapping columnObjectName="Join_Current_Previous" columnName="REVENUE_CHANGE"/>
+      <exceptionAggregationMetadata/>
+    </measure>
+  </baseMeasures>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="216" y="112"/>
+    
+      <rectangleSize width="160"/>
+    </shape>
+    
+  
+    <shape expanded="false" modelObjectName="Aggregation_Yearly_Revenue" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="118" y="501"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_Current_Year" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="301" y="376"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Projection_Previous_Year" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="91" y="376"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Join_Current_Previous" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="216" y="217"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="Projection_Previous_Year" modelObjectNameSpace="Join_Current_Previous" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="20" y="30"/>
+      <rectangleSize width="258"/>
+    </shape>
+    <shape modelObjectName="Projection_Current_Year" modelObjectNameSpace="Join_Current_Previous" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="255"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario>
