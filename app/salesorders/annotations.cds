@@ -24,7 +24,31 @@ annotate service.SalesOrders with @(
 
 
     /* ------------------------------------------------------------
-       Object Page actions
+       DEFAULT SORTING
+
+       New Sales Orders are displayed at the top.
+       createdAt is sorted in descending order.
+       ------------------------------------------------------------ */
+
+    UI.PresentationVariant : {
+        $Type : 'UI.PresentationVariantType',
+
+        SortOrder : [
+            {
+                $Type      : 'Common.SortOrderType',
+                Property   : createdAt,
+                Descending : true
+            }
+        ],
+
+        Visualizations : [
+            '@UI.LineItem'
+        ]
+    },
+
+
+    /* ------------------------------------------------------------
+       OBJECT PAGE ACTIONS
 
        Open:
        - Ship Order visible
@@ -55,7 +79,7 @@ annotate service.SalesOrders with @(
 
 
     /* ------------------------------------------------------------
-       List Report filter fields
+       LIST REPORT FILTER FIELDS
        ------------------------------------------------------------ */
 
     UI.SelectionFields : [
@@ -67,10 +91,10 @@ annotate service.SalesOrders with @(
 
 
     /* ------------------------------------------------------------
-       List Report columns
+       LIST REPORT COLUMNS
 
-       Ship and Cancel are intentionally excluded from this list.
-       The actions appear only on the Object Page.
+       Ship and Cancel actions are displayed only on the
+       Sales Order Object Page.
        ------------------------------------------------------------ */
 
     UI.LineItem : [
@@ -109,7 +133,7 @@ annotate service.SalesOrders with @(
 
 
     /* ------------------------------------------------------------
-       General Information section
+       GENERAL INFORMATION SECTION
        ------------------------------------------------------------ */
 
     UI.FieldGroup #GeneralInformation : {
@@ -157,7 +181,7 @@ annotate service.SalesOrders with @(
 
 
     /* ------------------------------------------------------------
-       Object Page sections
+       OBJECT PAGE SECTIONS
        ------------------------------------------------------------ */
 
     UI.Facets : [
@@ -224,8 +248,14 @@ annotate service.SalesOrders with {
     );
 
 
-    /* Technical properties used by Fiori */
+    /* ------------------------------------------------------------
+       TECHNICAL PROPERTIES USED BY FIORI
+       ------------------------------------------------------------ */
 
+    createdAt         @UI.Hidden;
+    createdBy         @UI.Hidden;
+    modifiedAt        @UI.Hidden;
+    modifiedBy        @UI.Hidden;
     statusCriticality @UI.Hidden;
     hideOrderActions  @UI.Hidden;
     canModify         @UI.Hidden;
@@ -309,7 +339,7 @@ annotate service.SalesOrderItems with @(
 
 
     /* ------------------------------------------------------------
-       Order Items table shown inside the Sales Order Object Page
+       ORDER ITEMS TABLE
        ------------------------------------------------------------ */
 
     UI.LineItem : [
@@ -337,7 +367,7 @@ annotate service.SalesOrderItems with @(
 
 
     /* ------------------------------------------------------------
-       Order Item detail section
+       ORDER ITEM INFORMATION
        ------------------------------------------------------------ */
 
     UI.FieldGroup #ItemInformation : {
@@ -369,7 +399,7 @@ annotate service.SalesOrderItems with @(
 
 
     /* ------------------------------------------------------------
-       Order Item Object Page sections
+       ORDER ITEM OBJECT PAGE SECTIONS
        ------------------------------------------------------------ */
 
     UI.Facets : [
@@ -415,8 +445,8 @@ annotate service.SalesOrderItems with {
 /* ============================================================
    PRODUCT VALUE HELP
 
-   unitPrice and currency belong to Products.
-   SalesOrderItems does not contain a currency property.
+   Unit Price and Currency belong to Products.
+   SalesOrderItems does not contain a Currency property.
    ============================================================ */
 
 annotate service.SalesOrderItems with {
